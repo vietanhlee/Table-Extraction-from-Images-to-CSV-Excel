@@ -1,0 +1,4 @@
+torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+paddlepaddle==3.0.0rc1 -i https://www.paddlepaddle.org.cn/packages/stable/cpu/
+paddleocr
+easyocr

@@ -7,10 +7,12 @@ import pandas as pd
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
 
+
+
 class Processing:
-    def __init__(self, num_threads=4):
-        self.reader = easyocr.Reader(['vi'], verbose=False)
-        self.paddle_reader = PaddleOCR(lang='en', show_log=False)
+    def __init__(self, num_threads=4, gpu = False):
+        self.reader = easyocr.Reader(['vi'], verbose=False, gpu= gpu)
+        self.paddle_reader = PaddleOCR(lang='en', show_log=False,use_gpu = gpu)
         self.num_threads = num_threads
 
     def find_rects_texts(self, img_path, mode_draw=0):

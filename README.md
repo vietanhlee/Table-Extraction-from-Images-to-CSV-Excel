@@ -14,7 +14,7 @@ compared to processing each box individually. A post-processing module is applie
 
 # Text Dectection
 
-Text detection is the process of locating text in an image or video and recognizing the presence of characters. The [DB algorithm](https://github.com/PaddlePaddle/PaddleOCR/blob/release/2.6/doc/doc_en/algorithm_det_db_en.md) is a popular algorithm used in the [PaddleOCR](https://github.com/PaddlePaddle/PaddleOCR) framework to localize text in the input image. It works by detecting the text regions in the image and then grouping them into text lines. This algorithm is known for its high accuracy and speed.
+Text detection is the process of locating text in an image or video and recognizing the presence of characters. The [DB algorithm](https://github.com/PaddlePaddle/PaddleOCR/blob/release/2.6/doc/doc_en/algorithm_det_db_en.md) is a popular algorithm used in the [PaddleOCR](https://paddlepaddle.github.io/PaddleOCR/latest/en/quick_start.html) framework to localize text in the input image. It works by detecting the text regions in the image and then grouping them into text lines. This algorithm is known for its high accuracy and speed.
 
 <!-- To enhance the accuracy of Text Recognition, images cropped by the DB algorithm were padded. This is because the padding helps to ensure that the text is not cut off during the recognition process. -->
 
@@ -31,10 +31,17 @@ git clone https://github.com/vietanhlee/Table-Extraction-from-Images-to-CSV-Exce
 ```
 
 After cloning the repository, download the required dependencies by running:
+- For using cpu:
 
-```
-pip install -r requirements_cpu.txt
-```
+    ```
+    pip install -r requirements_cpu.txt
+    ```
+
+- For using gpu:
+
+    ```
+    pip install -r requirements_gpu.txt
+    ```
 
 For command-line usage, execute the following script for inference:
 
@@ -49,5 +56,5 @@ For Jupyter Notebook, you can explore and experiment with the code at [predict.i
 
 # References
 
-- [PaddleOCR](https://github.com/PaddlePaddle/PaddleOCR)
+- [PaddleOCR](https://paddlepaddle.github.io/PaddleOCR/latest/en/quick_start.html)
 - [Easyocr](https://github.com/JaidedAI/EasyOCR)

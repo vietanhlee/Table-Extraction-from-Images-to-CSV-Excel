@@ -53,18 +53,18 @@ For Jupyter Notebook, you can explore and experiment with the code at [predict.i
 # Pipeline
 <div align="center">
   <div style="display: inline-block; text-align: center; margin-right: 20px;">
-    <img src="https://raw.githubusercontent.com/vietanhlee/Table-Extraction-from-Images-to-CSV-Excel/refs/heads/main/image%20test/3.jpg" width="300" height="400" />
+    <img src="https://raw.githubusercontent.com/vietanhlee/Table-Extraction-from-Images-to-CSV-Excel/refs/heads/main/image%20test/3.jpg" width="400" height="500" />
     <p>Ảnh gốc</p>
   </div>
   <div style="display: inline-block; text-align: center;">
-    <img src="https://raw.githubusercontent.com/vietanhlee/Table-Extraction-from-Images-to-CSV-Excel/refs/heads/main/for%20display%20github/box%20words%20level%20detect.png" width="300" height="400" />
-    <p>Detect bounding box word level</p>
+    <img src="https://raw.githubusercontent.com/vietanhlee/Table-Extraction-from-Images-to-CSV-Excel/refs/heads/main/for%20display%20github/box%20words%20level%20detect.png" width="400" height="500" />
+    <p>Detect bounding box word level by PaddleOCR</p>
   </div>
 </div>
 <div align="center" style="margin-top: 40px;">
   <div style="display: inline-block; text-align: center;">
     <img src="https://raw.githubusercontent.com/vietanhlee/Table-Extraction-from-Images-to-CSV-Excel/refs/heads/main/for%20display%20github/csv%20out.png" width="400" height="500" />
-    <p>CSV result</p>
+    <p>CSV result after recognize by Easyocr and restruct</p>
   </div>
 </div>
 

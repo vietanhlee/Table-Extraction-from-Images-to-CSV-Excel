@@ -1,9 +1,22 @@
 from Processing import Processing
 import pandas as pd
+import argparse
 
-path = r'image test\7.jpg'
+def main(gpu = False, path = r'image test\7.jpg', draw = 0):
+    tool = Processing(gpu= gpu)
+    DF = tool.process_single_image(img_path= path, draw= draw)
+    print(pd.DataFrame(DF))
 
-tool = Processing(gpu= False)
-DF = tool.process_single_image(path, draw= 0)
-print(pd.DataFrame(DF))
 
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--img_path', required=True, help='path of image for OCR')
+    parser.add_argument('--use_gpu', required=True, help='is use GPU?')
+    parser.add_argument('--draw', required=True, help='is display image after draw bounding box word level?')
+
+    args = parser.parse_args()
+
+    args.use_gpu = args.use_gpu.lower() in ['true', '1', 'yes']
+    args.draw = args.draw.lower() in ['true', '1', 'yes']
+    
+    main(args.use_gpu, args.img_path, args.draw)

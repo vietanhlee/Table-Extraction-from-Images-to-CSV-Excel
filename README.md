@@ -46,7 +46,7 @@ python predict.py --img path_image
 ```
 
 > example: 
-    `python predict.py --image test\3.jpg`
+    `python .\predict.py --img_path image_test/3.jpg --use_gpu False --draw True`
 
 For Jupyter Notebook, you can explore and experiment with the code at [predict.ipynb](https://github.com/vietanhlee/Table-Extraction-from-Images-to-CSV-Excel/blob/main/predict.ipynb).
 
@@ -54,7 +54,7 @@ For Jupyter Notebook, you can explore and experiment with the code at [predict.i
 <div align="center">
   <div style="display: inline-block; text-align: center">
     <img src="https://raw.githubusercontent.com/vietanhlee/Table-Extraction-from-Images-to-CSV-Excel/refs/heads/main/image%20test/3.jpg" width="500" height="600" />
-    <p>Ảnh gốc</p>
+    <p>original image</p>
   </div>
   <div style="display: inline-block; text-align: center;">
     <img src="https://raw.githubusercontent.com/vietanhlee/Table-Extraction-from-Images-to-CSV-Excel/refs/heads/main/for%20display%20github/box%20words%20level%20detect.png" width="500" height="600" />

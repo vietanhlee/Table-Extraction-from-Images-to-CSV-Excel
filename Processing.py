@@ -15,6 +15,8 @@ class Processing:
 
     def find_rects_texts(self, img_path, mode_draw=0):
         image = cv2.imread(img_path)
+        if image is None:
+            raise FileNotFoundError(f"Cannot read image at path: {img_path}")
         img = image.copy()
 
         h, w = image.shape[:2]

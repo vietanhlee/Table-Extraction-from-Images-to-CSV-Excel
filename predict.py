@@ -5,6 +5,11 @@ import argparse
 def main(gpu = False, path = r'image test\7.jpg', draw = 0):
     tool = Processing(gpu= gpu)
     DF = tool.process_single_image(img_path= path, draw= draw)
+    
+    if draw:
+        print('Image table detected was displayed with bounding box words level')
+        print('Please close matplotlib window to display Dataframe CSV output\n')
+    
     print(pd.DataFrame(DF))
 
 
@@ -16,6 +21,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    # Ép kiểu về từ string về bool
     args.use_gpu = args.use_gpu.lower() in ['true', '1', 'yes']
     args.draw = args.draw.lower() in ['true', '1', 'yes']
     

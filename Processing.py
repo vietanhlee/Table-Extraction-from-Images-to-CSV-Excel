@@ -9,11 +9,15 @@ import os
 
 class Processing:
     def __init__(self, num_threads=4, gpu = False):
+        # For task recogineze
         self.reader = easyocr.Reader(['vi'], verbose=False, gpu= gpu)
+        # For task detect
         self.paddle_reader = PaddleOCR(lang='en', show_log=False,use_gpu = gpu)
+        # For run many task simultaneously (don't test this function, it is not complete) 
         self.num_threads = num_threads
 
-    def find_rects_texts(self, img_path, mode_draw=0):
+    def find_rects_texts(self, img_path, mode_draw= 0):
+        '''Function for find rects (bounding box) and text respectively'''
         image = cv2.imread(img_path)
         if image is None:
             raise FileNotFoundError(f"Cannot read image at path: {img_path}")
@@ -60,6 +64,7 @@ class Processing:
         return rects, texts
 
     def check_line(self, box1, box2):
+        '''Check two bounding are all on a line'''
         return abs((box1[1] + box1[3]) // 2 - (box2[1] + box2[3]) // 2) < 10
 
     def rects_texts_ncollum_processed(self, rects, texts):
@@ -122,8 +127,6 @@ class Processing:
         rects_grouped, texts_grouped, n_cols = self.rects_texts_ncollum_processed(rects, texts)
         box_cols = self.find_box_cols(rects_grouped, n_cols)
         return self.find_text_each_row(box_cols, rects_grouped, texts_grouped)
-
-    
 
     def processing(self, img_paths):
         if isinstance(img_paths, str):

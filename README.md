@@ -53,7 +53,7 @@ For Jupyter Notebook, you can explore and experiment with the code at [predict.i
 # Pipeline
 <div align="center">
   <div style="display: inline-block; text-align: center">
-    <img src="https://raw.githubusercontent.com/vietanhlee/Table-Extraction-from-Images-to-CSV-Excel/refs/heads/main/image%20test/3.jpg" width="500" height="600" />
+    <img src="https://raw.githubusercontent.com/vietanhlee/Table-Extraction-from-Images-to-CSV-Excel/refs/heads/main/image_test/3.jpg" width="500" height="600" />
     <p>original image</p>
   </div>
   <div style="display: inline-block; text-align: center;">

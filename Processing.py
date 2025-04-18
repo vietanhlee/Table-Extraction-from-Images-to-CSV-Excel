@@ -6,16 +6,21 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
+
 class Processing:
-    def __init__(self, num_threads=4, gpu = False):
+    def __init__(self, num_threads=4, gpu = False, lang = 'en'):
         # For task recogineze
-        self.reader = easyocr.Reader(['vi', 'en'], verbose=False, gpu= gpu)
+        self.lang = lang
+        if lang == 'vi':
+            self.reader = easyocr.Reader(['vi', 'en'], verbose=False, gpu= gpu)
+        elif lang != 'en':
+            raise Exception(f"Language '{lang}' is not supported. Only 'vi'or 'en' is supported.")
         # For task detect
         self.paddle_reader = PaddleOCR(lang='en', show_log=False,use_gpu = gpu)
         # For run many task simultaneously (don't test this function, it is not complete) 
         self.num_threads = num_threads
 
-    def find_rects_texts(self, img_path, mode_draw= 0):
+    def find_rects_texts_easyocr(self, img_path, mode_draw= 0):
         '''Function for find rects (bounding box) and text respectively'''
         image = cv2.imread(img_path)
         if image is None:
@@ -176,16 +181,15 @@ class Processing:
         return result
 
     def process_single_image(self, img_path, draw=0):
-        rects, texts = self.find_rects_texts(img_path, draw)
+        if self.lang == 'vi':
+            rects, texts = self.find_rects_texts_easyocr(img_path, draw)
+        else:
+            rects, texts = self.find_rects_texts_paddle_all(img_path, draw)
+                
         rects_grouped, texts_grouped, n_cols = self.rects_texts_ncollum_processed(rects, texts)
         box_cols = self.find_box_cols(rects_grouped, n_cols)
         return self.find_text_each_row(box_cols, rects_grouped, texts_grouped)
-    def process_single_image_paddle_all(self, img_path, draw=0):
-        rects, texts = self.find_rects_texts_paddle_all(img_path, draw)
-        rects_grouped, texts_grouped, n_cols = self.rects_texts_ncollum_processed(rects, texts)
-        box_cols = self.find_box_cols(rects_grouped, n_cols)
-        return self.find_text_each_row(box_cols, rects_grouped, texts_grouped)
-
+    
     def processing(self, img_paths):
         if isinstance(img_paths, str):
             img_paths = [img_paths]

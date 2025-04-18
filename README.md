@@ -22,31 +22,33 @@ Text Recognition is the process of recognizing the text in an image or video. Fo
 
 Firstly, clone this repository by executing in CMD:
 
-```
+```bash
 git clone https://github.com/vietanhlee/Table-Extraction-from-Images-to-CSV-Excel
 ```
 
 After cloning the repository, download the required dependencies by running (python >= 3.8):
 - For using CPU:
 
-    ```
+    ```bash
     pip install -r requirements_cpu.txt
     ```
 
 - For using GPU (sure that you have GPU):
 
-    ```
+    ```bash
     pip install -r requirements_gpu.txt
     ```
 
 For command-line usage, execute the following script for inference:
 
-```
-python predict.py --img path_image
+```bash
+python predict.py --img_path path of image --use_gpu True or False --lang vi or en --draw True or False
 ```
 
 > example: 
-    `python .\predict.py --img_path image_test/3.jpg --use_gpu False --draw True`
+  ```bash
+  python predict.py --img_path image_test/3.jpg --use_gpu False --lang en --draw True
+  ```
 
 For Jupyter Notebook, you can explore and experiment with the code at [predict.ipynb](https://github.com/vietanhlee/Table-Extraction-from-Images-to-CSV-Excel/blob/main/predict.ipynb).
 

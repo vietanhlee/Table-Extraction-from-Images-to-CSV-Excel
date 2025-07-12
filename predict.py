@@ -1,15 +1,16 @@
+import os
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 from Processing import Processing
 import pandas as pd
 import argparse
 
 def main(gpu = False, path = r'image test\7.jpg', lang = 'en', draw = 0):
-    
+    print('Image table detected was displayed with bounding box words level')
+    print('Please close matplotlib window to display Dataframe CSV output\n')
     tool = Processing(gpu= gpu, lang= lang)
     DF = tool.process_single_image(img_path= path, draw= draw)
     
-    if draw:
-        print('Image table detected was displayed with bounding box words level')
-        print('Please close matplotlib window to display Dataframe CSV output\n')
     
     print(pd.DataFrame(DF))
 

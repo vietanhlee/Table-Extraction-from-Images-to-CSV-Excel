@@ -1,11 +1,12 @@
 import cv2
 import numpy as np
 import easyocr
-from paddleocr import PaddleOCR
+from paddleocr import PaddleOCR, TextDetection
 import matplotlib.pyplot as plt
 import pandas as pd
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 class Processing:
     def __init__(self, num_threads=4, gpu = False, lang = 'en'):
@@ -16,71 +17,72 @@ class Processing:
         elif lang != 'en':
             raise Exception(f"Language '{lang}' is not supported. Only 'vi'or 'en' is supported.")
         # For task detect
-        self.paddle_reader = PaddleOCR(lang='en', show_log=False,use_gpu = gpu)
+        self.paddle_all = PaddleOCR(lang='en', show_log=False,use_gpu = gpu)
+        self.paddle_det = TextDetection()
         # For run many task simultaneously (don't test this function, it is not complete) 
         self.num_threads = num_threads
-
-    def find_rects_texts_easyocr(self, img_path, mode_draw= 0):
+        self.image_input = None
+        self.image_resize = None
+        self.a = 10
+        self.b = self.a / 1.5
+    def resize_img(self):
+        h, w = self.image_input.shape[:2]
+        self.image_resized = cv2.resize(self.image_input, (int(w * self.a), int(h * self.b)))
+    def handle_text_errors(sefl, text):
+        text = text.strip()
+        if text == '1.': text = 'I.'
+        elif text == '11.': text = 'II.'
+        elif len(text) >= 2 and text[0] == '[' and text[-1].isdigit():
+            text = '1'+ text[1:]
+        else:
+            chars = list(text)
+            for i in range(1, len(chars)):
+                if chars[i] == '1' and chars[i - 1] == 'I':
+                    chars[i] = 'I'
+            text = ''.join(chars)
+        return text
+    
+    def draw_img_output(self, rects, img):
+        for rect in rects:
+            cv2.rectangle(img, (rect[0], rect[1]), (rect[2], rect[3]), (0, 255, 0), 1)
+        plt.figure(figsize=(12, 12))
+        plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        plt.axis('off')
+        plt.show()
+        
+    def find_rects_texts_easyocr(self, mode_draw= 0):
         '''Function for find rects (bounding box) and text respectively'''
-        image = cv2.imread(img_path)
-        if image is None:
-            raise FileNotFoundError(f"Cannot read image at path: {img_path}")
-        img = image.copy()
-        a = 10
-        b = a / 1.5
-        h, w = image.shape[:2]
-        image_resized = cv2.resize(image, (int(w * a), int(h * b)))
-        result = self.paddle_reader.ocr(image_resized, cls=True, rec= False)[0][::-1]
-
+        self.resize_img()
+        pts = self.paddle_det.predict(self.image_resized)[0]["dt_polys"]
         rects, horizontal_list, texts = [], [], []
 
         padding = 2
-        for line in result:
+        for line in pts:
             box = np.array(line, dtype=np.float32)
             x, y, w, h = cv2.boundingRect(box)
-            x1, y1 = max(int(int(x / a) - padding), 0), max(int(int(y / b) - padding), 0)
-            x2, y2 = int(int((x + w) / a) + padding), int(int((y + h) / b) + padding)
+            x1, y1 = max(int(int(x / self.a) - padding), 0), max(int(int(y / self.b) - padding), 0)
+            x2, y2 = int(int((x + w) / self.a) + padding), int(int((y + h) / self.b) + padding)
 
             rects.append([x1, y1, x2, y2])
             horizontal_list.append([x1, x2, y1, y2])
 
         rects = np.array(rects, dtype=int)
-        results = self.reader.recognize(img, horizontal_list=horizontal_list, free_list=[])
+        
+        results_ocr = self.reader.recognize(self.image_input, horizontal_list=horizontal_list, free_list=[])
 
-        for _, text, _ in results:
-            text = text.strip()
-            if text == '1.': text = 'I.'
-            elif text == '11.': text = 'II.'
-            elif len(text) >= 2 and text[0] == '[' and text[-1].isdigit():
-                text = '1'+ text[1:]
-            else:
-                chars = list(text)
-                for i in range(1, len(chars)):
-                    if chars[i] == '1' and chars[i - 1] == 'I':
-                        chars[i] = 'I'
-                text = ''.join(chars)
-            texts.append(text)
+        for _, text, _ in results_ocr:
+            texts.append(self.handle_text_errors(text= text))
 
         if mode_draw:
-            for rect in rects:
-                cv2.rectangle(img, (rect[0], rect[1]), (rect[2], rect[3]), (0, 255, 0), 1)
-            plt.figure(figsize=(12, 12))
-            plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-            plt.axis('off')
-            plt.show()
+            self.draw_img_output(rects, self.image_input)    
 
         return rects, texts
-    def find_rects_texts_paddle_all(self, img_path, mode_draw= 0):
+    
+        
+    def find_rects_texts_paddle_all(self, mode_draw= 0):
         '''Function for find rects (bounding box) and text respectively'''
-        image = cv2.imread(img_path)
-        if image is None:
-            raise FileNotFoundError(f"Cannot read image at path: {img_path}")
-        img = image.copy()
-        a = 10
-        b = a / 1.5
-        h, w = image.shape[:2]
-        image_resized = cv2.resize(image, (int(w * a), int(h * b)))
-        result = self.paddle_reader.ocr(image_resized, cls=True, rec= True)[0]
+        self.image_resize()
+        result = self.paddle_all.predict(self.image_resized)[0]
 
         rects, horizontal_list, texts = [], [], []
 
@@ -90,34 +92,18 @@ class Processing:
             
             x, y, w, h = cv2.boundingRect(box)
             
-            x1, y1 = max(int(int(x / a) - padding), 0), max(int(int(y / b) - padding), 0)
-            x2, y2 = int(int((x + w) / a) + padding), int(int((y + h) / b) + padding)
+            x1, y1 = max(int(int(x / self.a) - padding), 0), max(int(int(y / self.b) - padding), 0)
+            x2, y2 = int(int((x + w) / self.a) + padding), int(int((y + h) / self.b) + padding)
 
             rects.append([x1, y1, x2, y2])
             
             text = line[1][0]
-            text = text.strip()
-            if text == '1.': text = 'I.'
-            elif text == '11.': text = 'II.'
-            elif len(text) >= 2 and text[0] == '[' and text[-1].isdigit():
-                text = '1'+ text[1:]
-            else:
-                chars = list(text)
-                for i in range(1, len(chars)):
-                    if chars[i] == '1' and chars[i - 1] == 'I':
-                        chars[i] = 'I'
-                text = ''.join(chars)
-            texts.append(text)
+            texts.append(self.handle_text_errors(text= text))
             
         rects = np.array(rects, dtype=int)
 
         if mode_draw:
-            for rect in rects:
-                cv2.rectangle(img, (rect[0], rect[1]), (rect[2], rect[3]), (0, 255, 0), 1)
-            plt.figure(figsize=(12, 12))
-            plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-            plt.axis('off')
-            plt.show()
+            self.draw_img_output(rects= rects, img= self.image_input)
 
         return rects, texts
         
@@ -180,11 +166,11 @@ class Processing:
             result.append(row_data)
         return result
 
-    def process_single_image(self, img_path, draw=0):
+    def process_single_image(self, draw=0):
         if self.lang == 'vi':
-            rects, texts = self.find_rects_texts_easyocr(img_path, draw)
+            rects, texts = self.find_rects_texts_easyocr(draw)
         else:
-            rects, texts = self.find_rects_texts_paddle_all(img_path, draw)
+            rects, texts = self.find_rects_texts_paddle_all(draw)
                 
         rects_grouped, texts_grouped, n_cols = self.rects_texts_ncollum_processed(rects, texts)
         box_cols = self.find_box_cols(rects_grouped, n_cols)
